@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internal Linking Tool — Rediscovered Purpose Counselling</title>
+<style>
+  :root {
+    --blue: #20689c;
+    --gold: #b8924a;
+    --dark: #1a3a52;
+    --cream: #f4faff;
+    --light-gold: #fdf6ec;
+    --border: #d4e4f0;
+    --red-bg: #fdecea;
+    --red: #b83230;
+    --amber-bg: #fef8ec;
+    --amber: #b07a10;
+    --green-bg: #eaf7f1;
+    --green: #1a7a55;
+    --text: #2c3e50;
+    --muted: #6b7f8e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--dark);
+    color: white;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .header-left h1 {
+    font-size: 17px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 0.2px;
+  }
+  .header-left p {
+    font-size: 12px;
+    color: #8fb5cc;
+    margin-top: 2px;
+  }
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-bar-outer {
+    width: 180px;
+    height: 8px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 13px;
+    color: var(--gold);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* ── LAYOUT ── */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 24px 80px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: sticky;
+    top: 80px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .sidebar-header {
+    background: var(--dark);
+    color: white;
+    padding: 14px 18px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .sidebar-list { list-style: none; }
+  .sidebar-list li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px solid #f0f5f9;
+    transition: background 0.15s;
+  }
+  .sidebar-list li a:hover { background: var(--cream); }
+  .sidebar-list li a.done { color: var(--green); }
+  .sidebar-list li a.done .sb-icon { background: var(--green); }
+  .sb-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .sb-icon.high { background: var(--red); }
+  .sb-icon.medium { background: var(--amber); }
+  .sb-icon.low { background: #8fb5cc; }
+  .sb-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+    background: #f0f5f9;
+    border-radius: 99px;
+    padding: 1px 7px;
+  }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 7px 16px;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    background: white;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .filter-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+  .filter-btn.high.active { background: var(--red); border-color: var(--red); }
+  .filter-btn.medium.active { background: var(--amber); border-color: var(--amber); }
+  .filter-btn.low.active { background: #8fb5cc; border-color: #8fb5cc; }
+  .filter-btn.done-filter.active { background: var(--green); border-color: var(--green); }
+
+  /* ── POST CARDS ── */
+  .post-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s;
+  }
+  .post-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .post-card.all-done { border-color: #a8dfc4; }
+
+  .card-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .card-header:hover { background: #fafcff; }
+  .card-header.all-done-header { background: var(--green-bg); }
+
+  .card-check {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .card-check.done { background: var(--green); border-color: var(--green); color: white; }
+
+  .card-title-wrap { flex: 1; min-width: 0; }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--dark);
+    line-height: 1.3;
+    margin-bottom: 5px;
+  }
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .card-url {
+    font-size: 12px;
+    color: var(--blue);
+    text-decoration: none;
+    font-family: monospace;
+  }
+  .card-url:hover { text-decoration: underline; }
+
+  .priority-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+  .badge-high { background: var(--red-bg); color: var(--red); border: 1px solid #f5c6c2; }
+  .badge-medium { background: var(--amber-bg); color: var(--amber); border: 1px solid #f5dfa0; }
+  .badge-low { background: #e8f3fc; color: #5590b8; border: 1px solid #c4dcef; }
+  .badge-done { background: var(--green-bg); color: var(--green); border: 1px solid #a8dfc4; }
+
+  .card-toggle {
+    font-size: 18px;
+    color: var(--muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .card-toggle.open { transform: rotate(180deg); }
+
+  /* ── LINK ITEMS ── */
+  .card-body { display: none; }
+  .card-body.open { display: block; }
+
+  .link-item {
+    padding: 18px 20px;
+    border-bottom: 1px solid #f0f5f9;
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 14px;
+    align-items: start;
+    transition: background 0.15s;
+  }
+  .link-item:last-child { border-bottom: none; }
+  .link-item:hover { background: #fafcff; }
+  .link-item.link-done { background: #f4fbf7; }
+
+  .link-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    margin-top: 2px;
+    user-select: none;
+  }
+  .link-checkbox:hover { border-color: var(--blue); }
+  .link-checkbox.checked { background: var(--green); border-color: var(--green); color: white; }
+
+  .link-content { min-width: 0; }
+  .link-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  .link-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .link-field {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 8px;
+    align-items: start;
+    font-size: 13.5px;
+  }
+  .field-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    padding-top: 3px;
+    flex-shrink: 0;
+  }
+  .excerpt-text {
+    font-style: italic;
+    color: #4a6070;
+    background: #f4f8fb;
+    border-left: 3px solid var(--gold);
+    padding: 8px 12px;
+    border-radius: 0 6px 6px 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .anchor-pill {
+    display: inline-block;
+    background: #e5f2ff;
+    color: var(--blue);
+    border: 1px solid #c0dcf5;
+    border-radius: 5px;
+    padding: 3px 11px;
+    font-weight: 700;
+    font-size: 13px;
+    font-family: 'Georgia', serif;
+  }
+
+  .copy-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .dest-link {
+    font-size: 12.5px;
+    color: var(--blue);
+    font-family: monospace;
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .dest-link:hover { text-decoration: underline; }
+
+  .copy-btn {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .copy-btn:hover { border-color: var(--blue); color: var(--blue); background: #f0f7ff; }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+
+  .html-snippet {
+    background: #1a2535;
+    color: #c8dff0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    word-break: break-all;
+    margin-top: 4px;
+    position: relative;
+  }
+  .html-snippet .tag { color: #7ec8e3; }
+  .html-snippet .attr { color: #ffd080; }
+  .html-snippet .val { color: #a8e6b0; }
+  .html-snippet .anchor { color: white; font-weight: bold; }
+
+  .reason-text {
+    font-size: 13px;
+    color: #5a7080;
+    line-height: 1.5;
+  }
+
+  /* ── STATS BANNER ── */
+  .stats-banner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--blue);
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 5px;
+  }
+
+  /* ── HOW TO BOX ── */
+  .how-to {
+    background: var(--light-gold);
+    border: 1px solid #e8d5b0;
+    border-left: 4px solid var(--gold);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-size: 13.5px;
+    color: #5a4520;
+    line-height: 1.6;
+  }
+  .how-to strong { color: var(--dark); }
+  .how-to code {
+    background: rgba(0,0,0,0.06);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── DONE STATE ── */
+  .all-complete-banner {
+    display: none;
+    background: var(--green-bg);
+    border: 1px solid #a8dfc4;
+    border-radius: 10px;
+    padding: 20px 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--green);
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 760px) {
+    .page { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+    .stats-banner { grid-template-columns: repeat(2, 1fr); }
+    .link-field { grid-template-columns: 1fr; }
+    .field-label { padding-top: 0; }
+    .progress-wrap { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <h1>Internal Linking Tool — Rediscovered Purpose Counselling</h1>
+      <p>52 links across 18 blog posts · Work through each post and check off as you go</p>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progressBar" style="width:0%"></div>
+      </div>
+      <span class="progress-label" id="progressLabel">0 / 52 done</span>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">Blog Posts</div>
+    <ul class="sidebar-list" id="sidebarList">
+      <!-- injected by JS -->
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <div class="stats-banner">
+      <div class="stat-card"><span class="stat-num">18</span><span class="stat-label">Posts Reviewed</span></div>
+      <div class="stat-card"><span class="stat-num">52</span><span class="stat-label">Links to Add</span></div>
+      <div class="stat-card"><span class="stat-num" id="doneCount">0</span><span class="stat-label">Completed</span></div>
+      <div class="stat-card"><span class="stat-num" id="remainCount">52</span><span class="stat-label">Remaining</span></div>
+    </div>
+
+    <div class="how-to">
+      <strong>How to use this tool:</strong> Open each blog post HTML file, find the sentence shown in the <em>Excerpt</em> field, then wrap the anchor text with the HTML snippet provided. Click <strong>Copy HTML</strong> to copy the ready-to-paste link. Check the box when done. Your progress saves automatically in this session.
+      <br><br>
+      Example: <code>&lt;a href="/icbc-counselling-nanaimo"&gt;counselling after a car accident&lt;/a&gt;</code>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterPosts('all', this)">All Posts</button>
+      <button class="filter-btn high" onclick="filterPosts('high', this)">🔴 High Priority</button>
+      <button class="filter-btn medium" onclick="filterPosts('medium', this)">🟡 Medium Priority</button>
+      <button class="filter-btn low" onclick="filterPosts('low', this)">🟢 Low Priority</button>
+      <button class="filter-btn done-filter" onclick="filterPosts('incomplete', this)">Incomplete Only</button>
+    </div>
+
+    <div class="all-complete-banner" id="allCompleteBanner">
+      🎉 All 52 internal links are complete! Your topical authority is significantly stronger.
+    </div>
+
+    <div id="postContainer">
+      <!-- injected by JS -->
+    </div>
+
+  </main>
+</div>
+
+<script>
+const POSTS = [
+  {
+    id: 'p1',
+    title: 'Why Driving Feels Scary After a Car Accident',
+    url: '/why-driving-feels-scary-after-car-accident',
+    priority: 'high',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"Fear of driving is one of the most common responses following a motor vehicle accident. Your nervous system experienced something threatening, and it\'s doing its job by trying to keep you safe."',
+        anchor: 'counselling after a car accident',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'This is the first moment a reader recognizes their struggle — the ideal place to gently introduce that professional support exists and is ICBC-covered.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"What you\'re experiencing may be connected to trauma — your brain has learned to associate driving with danger."',
+        anchor: 'trauma counselling',
+        dest: '/trauma-counselling-nanaimo',
+        reason: 'Introduces trauma directly and contextually. Builds topical authority between your trauma and ICBC pages and helps readers find your trauma service.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"Hypervigilance, intrusive thoughts, and avoidance are all signs your nervous system is still on high alert."',
+        anchor: 'hypervigilance after an accident',
+        dest: '/hypervigilance-after-accident',
+        reason: 'Natural cross-link between closely related posts. Improves time on site and begins building your ICBC recovery content cluster.'
+      }
+    ]
+  },
+  {
+    id: 'p2',
+    title: 'How Counselling Sessions Work (Virtual & In-Person)',
+    url: '/what-to-expect-virtual-counselling',
+    priority: 'low',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"Many people come to me after a car accident, struggling with anxiety, sleep disruption, or difficulty getting back to normal life."',
+        anchor: 'ICBC-supported counselling',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'This post is often read by people in the research phase. Linking to your ICBC page here captures readers who are deciding whether to book.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"Whether you\'re dealing with trauma, relationship stress, or persistent worry, our first session is about getting to know you — not fitting you into a box."',
+        anchor: 'support for anxiety',
+        dest: '/anxiety-counselling-nanaimo',
+        reason: '"Persistent worry" is a direct reference to anxiety. Expands the reader\'s awareness of your anxiety service without feeling forced.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"I work with individuals, couples, and families — in person in Nanaimo or virtually across BC."',
+        anchor: 'family counselling in Nanaimo',
+        dest: '/family-counselling-nanaimo',
+        reason: 'Your family counselling page is currently underlinked. This brief, natural mention is the perfect moment to introduce it.'
+      }
+    ]
+  },
+  {
+    id: 'p3',
+    title: 'Why Men Emotionally Shut Down Under Stress',
+    url: '/why-men-emotionally-shut-down',
+    priority: 'high',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"Emotional shutdown isn\'t weakness. It\'s often a survival strategy — one that worked at some point in a man\'s life, but may no longer be serving him."',
+        anchor: "men's counselling",
+        dest: '/mens-mental-health-nanaimo',
+        reason: 'Your strongest men\'s mental health post. This is the ideal place to link to your service page — right as readers recognize themselves.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"When men suppress emotions for long periods, the body often keeps score — physical tension, irritability, and difficulty sleeping can all be signs something needs attention."',
+        anchor: 'support for men experiencing stress',
+        dest: '/mens-mental-health-nanaimo',
+        reason: 'Second link to the same page using a different anchor text variation — important for keyword diversity and topical authority.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"For men who\'ve been in an accident, the pressure to \'just get back to normal\' can compound the stress they\'re already carrying."',
+        anchor: 'therapy after a car accident',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'Bridges your men\'s content with your ICBC page — a logical cross-service connection for male readers who arrived through accident-related searches.'
+      }
+    ]
+  },
+  {
+    id: 'p4',
+    title: 'Hypervigilance After an Accident',
+    url: '/hypervigilance-after-accident',
+    priority: 'medium',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"Hypervigilance is your nervous system\'s attempt to protect you from future harm. After a traumatic event like a car accident, it can feel impossible to turn off."',
+        anchor: 'trauma-informed counselling',
+        dest: '/trauma-counselling-nanaimo',
+        reason: 'Hypervigilance is a core trauma symptom. This is the clearest contextual bridge to your trauma service page.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"If you\'re finding it hard to sleep, concentrate, or feel safe in everyday situations, you don\'t have to white-knuckle it alone."',
+        anchor: 'ICBC counselling in Nanaimo',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'Readers experiencing these symptoms post-accident are precisely your ICBC counselling audience. A compassionate and well-placed link.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"Hypervigilance can also affect how you drive, interact with family, or manage daily tasks."',
+        anchor: 'why driving feels scary after a car accident',
+        dest: '/why-driving-feels-scary-after-car-accident',
+        reason: 'These two posts form a natural pair. Cross-linking them strengthens your ICBC trauma recovery content cluster.'
+      }
+    ]
+  },
+  {
+    id: 'p5',
+    title: 'Sleep Problems After an Accident',
+    url: '/sleep-after-accident',
+    priority: 'low',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"Disrupted sleep following a motor vehicle accident is more common than people realize. Your nervous system has been through something significant."',
+        anchor: 'support following a motor vehicle accident',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'A warm early-article link that validates the reader\'s experience and gently introduces ICBC-covered support.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"Sleep problems often go hand-in-hand with anxiety, hypervigilance, and intrusive thoughts about the accident."',
+        anchor: 'anxiety therapy',
+        dest: '/anxiety-counselling-nanaimo',
+        reason: 'Anxiety is explicitly named as related — a direct and natural opportunity to link to your anxiety service page.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"If sleep disruption is lasting more than a few weeks, it may be a sign that the emotional impact of the accident needs direct attention."',
+        anchor: 'healing from trauma',
+        dest: '/trauma-counselling-nanaimo',
+        reason: 'Frames the pivot to professional support naturally — readers at this point are ready to consider that what they\'re experiencing has a name and a solution.'
+      }
+    ]
+  },
+  {
+    id: 'p6',
+    title: 'Anxiety After a Car Accident',
+    url: '/anxiety-after-accident',
+    priority: 'high',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"Anxiety after an accident often shows up in unexpected ways — a racing heart when you hear brakes, tightness in your chest on the highway, or constant \'what if\' thinking."',
+        anchor: 'counselling for anxiety',
+        dest: '/anxiety-counselling-nanaimo',
+        reason: 'The reader is recognizing their experience — this is the ideal moment to introduce your anxiety service page with warmth and zero pressure.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"Many people don\'t realize that ICBC covers counselling for emotional distress following an accident — not just physical injuries."',
+        anchor: 'accident-related counselling',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'A critical trust-building sentence. Linking to your ICBC page here adds real practical value and is likely to drive bookings.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"Anxiety and trauma often overlap after an accident. Understanding which is driving your symptoms can help you find the right support."',
+        anchor: 'trauma counselling',
+        dest: '/trauma-counselling-nanaimo',
+        reason: 'Contextually appropriate bridge between your two most important ICBC-adjacent service pages.'
+      }
+    ]
+  },
+  {
+    id: 'p7',
+    title: 'Why Do I Feel Anxious All the Time?',
+    url: '/why-do-i-feel-anxious-all-the-time',
+    priority: 'medium',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"Persistent anxiety that doesn\'t seem connected to anything specific may be generalized anxiety — a pattern where worry becomes your nervous system\'s default setting."',
+        anchor: 'anxiety counselling in Nanaimo',
+        dest: '/anxiety-counselling-nanaimo',
+        reason: 'Your most SEO-relevant anxiety post. It should prominently link to your anxiety service page — this is the most natural placement.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"For some people, anxiety begins or worsens after a stressful event — like a car accident, a loss, or a major life change."',
+        anchor: 'counselling after a car accident',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'Bridges your general anxiety audience with your ICBC page — capturing readers who may not have connected their anxiety to a past accident.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"Men in particular often carry anxiety in physical ways — tension, irritability, restlessness — without recognizing it as anxiety at all."',
+        anchor: "men's mental health support",
+        dest: '/mens-mental-health-nanaimo',
+        reason: 'A natural, non-forced opportunity to introduce your men\'s mental health page to readers who may be searching for themselves or a partner.'
+      }
+    ]
+  },
+  {
+    id: 'p8',
+    title: 'What Is Trauma?',
+    url: '/what-is-trauma',
+    priority: 'medium',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"Trauma is not about what happened to you — it\'s about what happened inside you as a result. Your nervous system\'s response to an overwhelming event."',
+        anchor: 'trauma therapy',
+        dest: '/trauma-counselling-nanaimo',
+        reason: 'This foundational post should be a strong feeder to your trauma service page. This is the most natural anchor point.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"Motor vehicle accidents are one of the most common causes of trauma in adults — and one of the most under-treated."',
+        anchor: 'ICBC counselling in Nanaimo',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'Directly connects educational content to actionable support, and strengthens the topical relationship between your trauma and ICBC pages.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"Trauma can affect families, not just individuals. The ripple effect of one person\'s suffering is often felt throughout the household."',
+        anchor: 'support for families',
+        dest: '/family-counselling-nanaimo',
+        reason: 'A rare and natural opportunity to link to your family counselling page from educational content — strengthening a currently underlinked priority page.'
+      }
+    ]
+  },
+  {
+    id: 'p9',
+    title: 'Supporting a Family Member After an Accident',
+    url: '/supporting-family-member-after-accident',
+    priority: 'high',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"When someone you love is struggling after an accident, it can be hard to know what to say or how to help."',
+        anchor: 'family counselling in Nanaimo',
+        dest: '/family-counselling-nanaimo',
+        reason: 'The most direct feeder for your family counselling page. Linking early helps readers recognize that support is available for the whole family.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"Did you know that ICBC may cover counselling for immediate family members of someone injured in an accident — even if you weren\'t in the vehicle?"',
+        anchor: 'ICBC coverage for family members',
+        dest: '/icbc-counselling-family-members',
+        reason: 'Your ICBC family page is a key differentiator. This is the most contextually appropriate post on the site to link from — don\'t miss this one.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"Watching a partner or parent struggle with trauma can be its own traumatic experience."',
+        anchor: 'support following trauma',
+        dest: '/trauma-counselling-nanaimo',
+        reason: 'Secondary trauma is a real clinical concern. This link naturally introduces your trauma page to a family-focused audience.'
+      }
+    ]
+  },
+  {
+    id: 'p10',
+    title: 'How to Talk to Your Doctor About Mental Health After an Accident',
+    url: '/talking-to-doctor-mental-health-accident',
+    priority: 'low',
+    links: [
+      {
+        num: '1 of 2',
+        excerpt: '"Many people leave their doctor\'s office without mentioning how they\'re really feeling emotionally — the focus stays on physical injuries."',
+        anchor: 'accident-related counselling',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'Reinforces that help is available and ICBC-covered — without requiring a doctor\'s referral. Adds practical value for readers at this stage.'
+      },
+      {
+        num: '2 of 2',
+        excerpt: '"Anxiety, sleep disruption, and difficulty concentrating are all worth raising with your doctor — and with a counsellor."',
+        anchor: 'help with persistent worry',
+        dest: '/anxiety-counselling-nanaimo',
+        reason: 'A gentle anchor text that links naturally from an educational article to your anxiety service — feels like a caring suggestion, not a sales pitch.'
+      }
+    ]
+  },
+  {
+    id: 'p11',
+    title: 'ICBC Claims and Mental Health: What You Need to Know',
+    url: '/icbc-claims-mental-health',
+    priority: 'high',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"ICBC covers counselling for emotional and psychological distress following a motor vehicle accident — you don\'t need a referral from your doctor."',
+        anchor: 'ICBC counselling in Nanaimo',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'Your highest-intent ICBC informational post. This link is essential for converting ready-to-book readers into bookings.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"Immediate family members of someone injured in an accident may also be eligible for coverage."',
+        anchor: 'ICBC coverage for family members',
+        dest: '/icbc-counselling-family-members',
+        reason: 'A high-value cross-link to your underlinked ICBC family page — completely contextually appropriate and likely to surprise readers in a good way.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"Trauma, anxiety, and sleep issues are among the most commonly covered mental health concerns under ICBC\'s Enhanced Care model."',
+        anchor: 'trauma-informed counselling',
+        dest: '/trauma-counselling-nanaimo',
+        reason: 'Reinforces topical authority around trauma while keeping the educational tone of the article intact.'
+      }
+    ]
+  },
+  {
+    id: 'p12',
+    title: 'What Happens in Your First Counselling Session',
+    url: '/first-counselling-session',
+    priority: 'low',
+    links: [
+      {
+        num: '1 of 2',
+        excerpt: '"Whether you\'ve been referred through ICBC or you\'ve reached out on your own, the first session is about one thing: making sure you feel safe enough to talk."',
+        anchor: 'ICBC-supported counselling',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'A direct, natural anchor for ICBC-referred clients reading this post before their first session.'
+      },
+      {
+        num: '2 of 2',
+        excerpt: '"Some people come in because they\'re not sleeping, others because they\'re angry or withdrawn — and many don\'t have a label for what they\'re experiencing."',
+        anchor: 'counselling for men',
+        dest: '/mens-mental-health-nanaimo',
+        reason: '"Angry or withdrawn" maps directly to how men often present in counselling. A gentle, validating link that opens a door without pressure.'
+      }
+    ]
+  },
+  {
+    id: 'p13',
+    title: 'Concussion and Emotional Changes',
+    url: '/concussion-emotional-changes',
+    priority: 'medium',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"After a concussion, many people experience irritability, emotional sensitivity, low mood, and difficulty concentrating — and wonder if something is wrong with them."',
+        anchor: 'therapy after a car accident',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'Concussion commonly follows car accidents. This link bridges the two pages and helps readers understand that ICBC may cover their counselling.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"Anxiety is a frequent companion to concussion recovery — the unpredictability of symptoms can create a constant low-level state of worry."',
+        anchor: 'anxiety support',
+        dest: '/anxiety-counselling-nanaimo',
+        reason: 'Concussion-related anxiety is a genuine clinical concern — this link connects readers to the right resource naturally.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"Counselling during concussion recovery can help you manage the emotional side of healing — not just the physical."',
+        anchor: 'trauma counselling',
+        dest: '/trauma-counselling-nanaimo',
+        reason: 'The emotional disruption from concussion overlaps with trauma responses. Expands the reader\'s understanding and supports your content cluster.'
+      }
+    ]
+  },
+  {
+    id: 'p14',
+    title: 'Men and Help-Seeking: Why It\'s Hard and What Helps',
+    url: '/men-help-seeking',
+    priority: 'high',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"For many men, the idea of asking for help feels like a contradiction — like admitting defeat."',
+        anchor: "men's mental health support",
+        dest: '/mens-mental-health-nanaimo',
+        reason: 'Your definitive men\'s mental health post. Link to your service page early — right as readers are recognizing themselves in the writing.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"The men I work with aren\'t broken. They\'re often exhausted, isolated, and carrying more than they\'ve told anyone."',
+        anchor: 'therapy for men',
+        dest: '/mens-mental-health-nanaimo',
+        reason: 'Second varied-anchor link to your men\'s page — entirely warranted given this post is purpose-built to attract that audience.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"Accidents, job stress, relationship tension — any of these can push a man to a breaking point without him recognizing the signs."',
+        anchor: 'counselling after a car accident',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'Natural multi-topic bridge — valuable for men who arrived via ICBC-related searches but landed on this post first.'
+      }
+    ]
+  },
+  {
+    id: 'p15',
+    title: 'When Worry Takes Over: Understanding Generalized Anxiety',
+    url: '/understanding-generalized-anxiety',
+    priority: 'medium',
+    links: [
+      {
+        num: '1 of 2',
+        excerpt: '"Generalized anxiety disorder (GAD) involves persistent, uncontrollable worry that spans multiple areas of life — health, relationships, work, and the future."',
+        anchor: 'anxiety counselling in Nanaimo',
+        dest: '/anxiety-counselling-nanaimo',
+        reason: 'Your strongest GAD-focused piece should funnel clearly to your anxiety service page — this is the most natural and impactful placement.'
+      },
+      {
+        num: '2 of 2',
+        excerpt: '"For men, generalized anxiety often looks different — less like \'worry\' and more like irritability, control-seeking, or difficulty relaxing."',
+        anchor: 'counselling for men',
+        dest: '/mens-mental-health-nanaimo',
+        reason: 'Bridges your anxiety and men\'s health content naturally — serves both audiences without disrupting the educational tone.'
+      }
+    ]
+  },
+  {
+    id: 'p16',
+    title: 'Couples and Conflict After a Car Accident',
+    url: '/couples-conflict-after-accident',
+    priority: 'medium',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"After an accident, couples often find themselves in roles they didn\'t choose — one partner overwhelmed, the other trying to hold everything together."',
+        anchor: 'family counselling in Nanaimo',
+        dest: '/family-counselling-nanaimo',
+        reason: 'Your most underlinked priority page. This post is one of the only places on the blog where family dynamics are the main focus.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"ICBC coverage can extend to immediate family members — including partners dealing with the emotional fallout of someone they love being hurt in a crash."',
+        anchor: 'ICBC family member coverage',
+        dest: '/icbc-counselling-family-members',
+        reason: 'Bridges your ICBC family page with couples content in a way that no other blog post does. High relevance, high intent.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"Many couples don\'t recognize that what\'s straining their relationship is trauma — not a fundamental incompatibility."',
+        anchor: 'healing from trauma',
+        dest: '/trauma-counselling-nanaimo',
+        reason: 'Reframes relationship conflict as a trauma response — contextually appropriate and adds meaningful clinical depth to the article.'
+      }
+    ]
+  },
+  {
+    id: 'p17',
+    title: 'How Trauma Affects the Body',
+    url: '/how-trauma-affects-body',
+    priority: 'low',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"Trauma doesn\'t just live in the mind — it lives in the body. Tension, fatigue, physical pain, and a persistent sense of unease are all ways trauma expresses itself somatically."',
+        anchor: 'trauma therapy',
+        dest: '/trauma-counselling-nanaimo',
+        reason: 'This foundational somatic trauma post should link directly to your trauma service page here — the clearest possible contextual anchor.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"For accident survivors, these body-based symptoms often emerge weeks or months after the initial event — long after the physical injuries appear to have healed."',
+        anchor: 'support following a motor vehicle accident',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'Specifically targets accident survivors — the primary ICBC audience — and bridges this educational post to your main service page naturally.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"Understanding the body\'s trauma response can be the first step toward relief — and many people find that simply naming what\'s happening makes a significant difference."',
+        anchor: 'what is trauma',
+        dest: '/what-is-trauma',
+        reason: 'These two posts form a natural educational pair. Cross-linking improves session depth and strengthens your trauma content cluster.'
+      }
+    ]
+  },
+  {
+    id: 'p18',
+    title: 'Recovery Takes Time: Understanding the Emotional Arc After an Accident',
+    url: '/recovery-after-accident',
+    priority: 'medium',
+    links: [
+      {
+        num: '1 of 3',
+        excerpt: '"Emotional recovery from a motor vehicle accident doesn\'t follow a straight line. There are better days and harder days — and both are part of the process."',
+        anchor: 'ICBC counselling in Nanaimo',
+        dest: '/icbc-counselling-nanaimo',
+        reason: 'This motivational post is exactly what someone in mid-recovery reads. Meeting them with a link to professional, ICBC-covered support is both compassionate and strategically sound.'
+      },
+      {
+        num: '2 of 3',
+        excerpt: '"Anxiety, hypervigilance, and low mood are all common companions in the weeks and months following an accident."',
+        anchor: 'counselling for anxiety',
+        dest: '/anxiety-counselling-nanaimo',
+        reason: 'Anxiety is listed first among common post-accident symptoms — a natural, unforced link placement that adds real value for the reader.'
+      },
+      {
+        num: '3 of 3',
+        excerpt: '"For families navigating this together, the strain can feel relentless — especially when everyone is coping differently."',
+        anchor: 'support for families',
+        dest: '/family-counselling-nanaimo',
+        reason: 'One of the few posts that naturally mentions families in a recovery context — a strong, low-friction link to your most underlinked priority page.'
+      }
+    ]
+  }
+];
+
+// ── STATE ──
+const state = {};
+POSTS.forEach(p => {
+  state[p.id] = p.links.map(() => false);
+});
+
+const TOTAL = POSTS.reduce((acc, p) => acc + p.links.length, 0);
+
+function getDone() {
+  return Object.values(state).reduce((acc, arr) => acc + arr.filter(Boolean).length, 0);
+}
+
+function updateProgress() {
+  const done = getDone();
+  const pct = Math.round((done / TOTAL) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = done + ' / ' + TOTAL + ' done';
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('remainCount').textContent = TOTAL - done;
+  document.getElementById('allCompleteBanner').style.display = done === TOTAL ? 'block' : 'none';
+  updateSidebar();
+}
+
+function isPostDone(post) {
+  return state[post.id].every(Boolean);
+}
+
+function toggleLink(postId, linkIdx, el) {
+  state[postId][linkIdx] = !state[postId][linkIdx];
+  el.classList.toggle('checked', state[postId][linkIdx]);
+  el.textContent = state[postId][linkIdx] ? '✓' : '';
+  const item = el.closest('.link-item');
+  item.classList.toggle('link-done', state[postId][linkIdx]);
+
+  const post = POSTS.find(p => p.id === postId);
+  const cardHeader = document.getElementById('header-' + postId);
+  const cardCheck = document.getElementById('cardcheck-' + postId);
+  const allDone = isPostDone(post);
+  cardHeader.classList.toggle('all-done-header', allDone);
+  if (cardCheck) {
+    cardCheck.classList.toggle('done', allDone);
+    cardCheck.textContent = allDone ? '✓' : '';
+  }
+  document.getElementById('card-' + postId).classList.toggle('all-done', allDone);
+
+  updateProgress();
+}
+
+function toggleCard(postId) {
+  const body = document.getElementById('body-' + postId);
+  const toggle = document.getElementById('toggle-' + postId);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  toggle.classList.toggle('open', !isOpen);
+}
+
+function copyHtml(anchor, dest, btn) {
+  const html = `<a href="${dest}">${anchor}</a>`;
+  navigator.clipboard.writeText(html).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy HTML';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function filterPosts(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  POSTS.forEach(post => {
+    const card = document.getElementById('card-' + post.id);
+    let show = true;
+    if (type === 'high') show = post.priority === 'high';
+    else if (type === 'medium') show = post.priority === 'medium';
+    else if (type === 'low') show = post.priority === 'low';
+    else if (type === 'incomplete') show = !isPostDone(post);
+    card.style.display = show ? '' : 'none';
+  });
+}
+
+function buildSidebar() {
+  const list = document.getElementById('sidebarList');
+  POSTS.forEach((post, i) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '#card-' + post.id;
+    a.id = 'sb-' + post.id;
+    a.innerHTML = `
+      <span class="sb-icon ${post.priority}" id="sbicon-${post.id}">${i+1}</span>
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${post.title}</span>
+      <span class="sb-count">${post.links.length}</span>
+    `;
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+}
+
+function updateSidebar() {
+  POSTS.forEach(post => {
+    const a = document.getElementById('sb-' + post.id);
+    const icon = document.getElementById('sbicon-' + post.id);
+    if (isPostDone(post)) {
+      a.classList.add('done');
+      icon.textContent = '✓';
+      icon.style.background = 'var(--green)';
+    } else {
+      a.classList.remove('done');
+      icon.textContent = POSTS.indexOf(post) + 1;
+      icon.style.background = '';
+    }
+  });
+}
+
+function buildCards() {
+  const container = document.getElementById('postContainer');
+  POSTS.forEach((post, pi) => {
+    const badgeClass = { high: 'badge-high', medium: 'badge-medium', low: 'badge-low' }[post.priority];
+    const badgeLabel = { high: '🔴 High Priority', medium: '🟡 Medium Priority', low: '🟢 Low Priority' }[post.priority];
+
+    const card = document.createElement('div');
+    card.className = 'post-card';
+    card.id = 'card-' + post.id;
+
+    const linksHtml = post.links.map((link, li) => `
+      <div class="link-item" id="linkitem-${post.id}-${li}">
+        <div class="link-checkbox" id="cb-${post.id}-${li}" onclick="toggleLink('${post.id}', ${li}, this)"></div>
+        <div class="link-content">
+          <div class="link-num">Link ${link.num}</div>
+          <div class="link-fields">
+            <div class="link-field">
+              <span class="field-label">Excerpt</span>
+              <span class="excerpt-text">${link.excerpt}</span>
+            </div>
+            <div class="link-field">
+              <span class="field-label">Anchor Text</span>
+              <span><span class="anchor-pill">${link.anchor}</span></span>
+            </div>
+            <div class="link-field">
+              <span class="field-label">Link To</span>
+              <span class="copy-row">
+                <a class="dest-link" href="https://rediscoveredpurposecounselling.ca${link.dest}" target="_blank">${link.dest}</a>
+                <button class="copy-btn" onclick="copyHtml('${link.anchor.replace(/'/g,"\\'")}', '${link.dest}', this)">Copy HTML</button>
+              </span>
+            </div>
+            <div class="link-field">
+              <span class="field-label">HTML Snippet</span>
+              <div class="html-snippet"><span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"${link.dest}"</span><span class="tag">&gt;</span><span class="anchor">${link.anchor}</span><span class="tag">&lt;/a&gt;</span></div>
+            </div>
+            <div class="link-field">
+              <span class="field-label">Why This Link</span>
+              <span class="reason-text">${link.reason}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    card.innerHTML = `
+      <div class="card-header" id="header-${post.id}" onclick="toggleCard('${post.id}')">
+        <div class="card-check" id="cardcheck-${post.id}"></div>
+        <div class="card-title-wrap">
+          <div class="card-title">${post.title}</div>
+          <div class="card-meta">
+            <a class="card-url" href="https://rediscoveredpurposecounselling.ca${post.url}" target="_blank" onclick="event.stopPropagation()">${post.url}</a>
+            <span class="priority-badge ${badgeClass}">${badgeLabel}</span>
+            <span style="font-size:12px;color:var(--muted);">${post.links.length} link${post.links.length>1?'s':''} to add</span>
+          </div>
+        </div>
+        <span class="card-toggle" id="toggle-${post.id}">▾</span>
+      </div>
+      <div class="card-body" id="body-${post.id}">
+        ${linksHtml}
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  // Auto-open high priority posts
+  POSTS.filter(p => p.priority === 'high').forEach(p => {
+    document.getElementById('body-' + p.id).classList.add('open');
+    document.getElementById('toggle-' + p.id).classList.add('open');
+  });
+}
+
+buildSidebar();
+buildCards();
+updateProgress();
+</script>
+</body>
+</html>
